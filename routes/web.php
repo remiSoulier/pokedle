@@ -12,6 +12,9 @@ Route::get('/', function () {
 });
 
 Route::get('/login', function () {
+    if (session()->has('joueur_id')) {
+        return redirect('/play');
+    }
     return view('login');
 });
 
@@ -43,53 +46,47 @@ Route::get('/logout', function () {
 });
 
 Route::get('/play', function () {
-    $pokemon = Pokemon::whereIn('generation', [1])
-        ->inRandomOrder()
-        ->first();
+    return view('play');
 
-    session()->put('pokemonCible', $pokemon);
-    (new PlayerController)->enregisterPartie('classique', $pokemon->id, 0, 'en cours');
-
-    $pokemons = session()->get('pokemons', []);
-    return view('play', compact('pokemons'));
 });
 
+Route::get('/play/classic', function () {
+    $generations = [2];
+    $pokemon = Pokemon::getRandomPokemon($generations);
+    var_dump($pokemon);
 
-/*Route::post('/play', function () {
-    $input = request('input');
-    $pokemons = Pokemon::where('name', 'like', "%$input%")->get();
-    return view('play', compact('pokemons'));
-});*/
+    session()->put('pokemonCible', $pokemon);
+    //(new PlayerController)->enregisterPartie('classique', $pokemon->id, 0, 'en cours');
 
+    $pokemons = session()->get('pokemons', []);
+    return view('classic', compact('pokemons'));
+});
 
-
-Route::post('/play', function (Request $request) {
-
+Route::post('/play/classic', function (Request $request) {
     $input = trim((string) $request->input('input', ''));
-
     // Liste actuelle stockée en session
     $pokemons = session()->get('pokemons', []);
 
     // Pokémon cible en session (à créer dans le GET si absent)
     $pokemonCible = session()->get('pokemonCible');
-    //var_dump($pokemonCible);
-
-    (new PlayerController)->updatePartie(session()->get('partie_id'), count($pokemons), 'en cours');
+    //(new PlayerController)->updatePartie(session()->get('partie_id'), count($pokemons), 'en cours');
 
     if (!$pokemonCible) {
-        return redirect('/play')->with('error', "Pas de Pokémon cible en session.");
+        return redirect('/play/classic')->with('error', "Pas de Pokémon cible en session.");
     }
 
     // Recherche (premier match)
     $pokemon = Pokemon::where('name', 'like', "%{$input}%")->first();
 
+    if (!isset($pokemon)) {
+        return view('classic',compact('pokemons'));
+    }
+
     if ($pokemon->id === $pokemonCible->id) {
         return redirect('/win');
     }
 
-    if (!$pokemon) {
-        return redirect('/play',compact('pokemons'));
-    }
+
 
     // ✅ éviter les doublons : comparer par ID
     $alreadyGuessed = collect($pokemons)->contains(function ($p) use ($pokemon) {
@@ -117,7 +114,15 @@ Route::post('/play', function (Request $request) {
 
         // Taille/poids : si tu veux plus tard ajouter ↑ ↓, on peut.
         $resHeight = ((float)$pokemon->height === (float)$pokemonCible->height) ? 'green' : 'red';
+        $hintHeight = null;
+        if ($resHeight === 'red') {
+            $hintHeight = ((float)$pokemon->height < (float)$pokemonCible->height) ? '↑' : '↓';
+        }
         $resWeight = ((float)$pokemon->weight === (float)$pokemonCible->weight) ? 'green' : 'red';
+        $hintWeight = null;
+        if ($resWeight === 'red') {
+            $hintWeight = ((float)$pokemon->weight < (float)$pokemonCible->weight) ? '↑' : '↓';
+        }
 
         $pokemons[] = [
             'pokemon' => $pokemon,
@@ -129,7 +134,9 @@ Route::post('/play', function (Request $request) {
                 'evolution_stage' => $resEvolutionStage,
                 'is_fully_evolved' => $resIsFullyEvolved,
                 'height' => $resHeight,
+                'hint_height' => $hintHeight,
                 'weight' => $resWeight,
+                'hint_weight' => $hintWeight,
             ]
         ];
     }
@@ -137,19 +144,32 @@ Route::post('/play', function (Request $request) {
     session()->put('pokemons', $pokemons);
     $pokemons = array_reverse($pokemons); // pour afficher le plus récent en haut
 
-    return view('/play', compact('pokemons'));
+    return view('classic', compact('pokemons'));
+});
+
+Route::get('/play/emoji', function () {
+    return view('notImplemented');
+});
+
+Route::get('/play/description', function () {
+    return view('notImplemented');
+});
+
+Route::get('/play/whosthat', function () {
+    return view('notImplemented');
 });
 
 Route::post('/reset', function () {
-    (new PlayerController)->updatePartie(session()->get('partie_id'), count(session()->get('pokemons', [])), 'perdu');
+    //(new PlayerController)->updatePartie(session()->get('partie_id'), count(session()->get('pokemons', [])), 'perdu');
     session()->forget('pokemons');
     return redirect('/play');
 });
 
 Route::get('/win', function () {
     $nbEssais = count(session()->get('pokemons', []));
-    (new PlayerController)->updatePartie(session()->get('partie_id'), $nbEssais, 'gagné');
+    $pokemon = session()->get('pokemonCible');
+    //(new PlayerController)->updatePartie(session()->get('partie_id'), $nbEssais, 'gagné');
 
     session()->forget('pokemons');
-    return view('win',compact('nbEssais'));
+    return view('win',compact('nbEssais', 'pokemon'));
 });
