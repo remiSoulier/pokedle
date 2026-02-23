@@ -1,11 +1,8 @@
-<!doctype html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>S'inscrire</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title', 'Login')
+
+@section('content')
 
 <div style="text-align: center; margin-top: 50px;">
     <h1>S'inscrire</h1>
@@ -20,5 +17,4 @@
         <button type="submit" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px;">S'inscrire</button>
     </form>
     <p style="margin-top: 20px;">Déjà un compte ? <a href="/login" style="color: #007BFF;">Se connecter</a></p>
-</body>
-</html>
+@endsection

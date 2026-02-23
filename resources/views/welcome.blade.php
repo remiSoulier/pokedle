@@ -1,11 +1,8 @@
-<!doctype html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Pokedle</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title', 'Login')
+
+@section('content')
 
     <div style="text-align: center; margin-top: 50px;">
         <h1>Bienvenue sur Pokedle !</h1>
@@ -14,5 +11,4 @@
         <a href="/play" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">Jouer en tant qu'invité</a>
     </div>
 
-</body>
-</html>
+@endsection

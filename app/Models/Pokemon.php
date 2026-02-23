@@ -28,4 +28,9 @@ class Pokemon extends Model
         'height' => 'float',
         'weight' => 'float',
     ];
+
+    public static function getRandomPokemon(array $generations)
+    {
+        return self::whereIn('generation', $generations)->inRandomOrder()->first();
+    }
 }
