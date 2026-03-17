@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Joueur extends Model
 {
     protected $table = 'joueurs';
+    public $timestamps = false;
 
     protected $fillable = ['pseudo', 'pwd_hash'];
 

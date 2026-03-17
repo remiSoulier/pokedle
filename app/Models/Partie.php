@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Partie extends Model
 {
     protected $table = 'parties';
+    public $timestamps = false;
 
     protected $fillable = [
         'joueur_id',

@@ -1,0 +1,275 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{listings}
+
+\geometry{margin=2.5cm}
+
+\title{Pokedle \\ Rapport de projet}
+\author{Rémi Soulier \\ BTS SIO SLAM}
+\date{\today}
+
+\begin{document}
+
+    \maketitle
+    \tableofcontents
+    \newpage
+
+    \section{Introduction}
+
+    Dans le cadre de ma formation en BTS SIO option SLAM, j’ai réalisé une application web nommée \textbf{Pokedle}.
+    Ce projet étudiant s’inspire du concept du site pokedle.com, qui lui-même reprend le principe du jeu Wordle.
+
+    Le principe du jeu est simple : un Pokémon mystère est choisi aléatoirement et l’utilisateur doit le deviner en un nombre limité d’essais. À chaque tentative, l’application compare les caractéristiques du Pokémon proposé avec celles du Pokémon cible et affiche des indices afin d’aider le joueur.
+
+    Ce projet a été réalisé dans un objectif pédagogique afin de mettre en pratique les compétences du référentiel BTS SIO, notamment :
+
+    \begin{itemize}
+        \item la conception d’une application web
+        \item la modélisation d’une base de données
+        \item l’exploitation d’une API REST
+        \item la structuration d’un projet logiciel
+    \end{itemize}
+
+    \section{Conception}
+
+    Avant la phase de développement, une phase de conception a été réalisée afin de modéliser le fonctionnement du système.
+
+    \subsection{Diagramme de cas d'utilisation}
+
+    Le diagramme de cas d'utilisation permet d'identifier les interactions entre les utilisateurs et l'application.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=12cm]{figures/usecase.png}
+        \caption{Diagramme de cas d'utilisation}
+    \end{figure}
+
+    Deux types d'utilisateurs sont identifiés :
+
+    \begin{itemize}
+        \item le visiteur
+        \item le joueur connecté
+    \end{itemize}
+
+    Les principales actions possibles sont :
+
+    \begin{itemize}
+        \item créer un compte
+        \item se connecter
+        \item lancer une partie
+        \item proposer un Pokémon
+        \item consulter le résultat
+        \item consulter l’historique des parties
+    \end{itemize}
+
+    \subsection{Diagramme de classes}
+
+    Le diagramme de classes permet de représenter la structure de l’application.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=12cm]{figures/classdiagram.png}
+        \caption{Diagramme de classes}
+    \end{figure}
+
+    Les principales classes sont :
+
+    \begin{itemize}
+        \item Player : représente un joueur
+        \item Game : représente une partie
+        \item Pokemon : représente un Pokémon
+        \item Attempt : représente une tentative d’un joueur
+    \end{itemize}
+
+    Ces classes permettent de modéliser la logique métier du jeu.
+
+    \subsection{Modèle conceptuel de données}
+
+    Le modèle conceptuel de données permet de structurer les informations stockées dans la base de données.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=12cm]{figures/mcd.png}
+        \caption{Modèle conceptuel de données}
+    \end{figure}
+
+    Les entités principales sont :
+
+    \begin{itemize}
+        \item Joueur
+        \item Partie
+        \item Pokémon
+        \item Tentative
+    \end{itemize}
+
+    Les relations principales sont :
+
+    \begin{itemize}
+        \item un joueur peut jouer plusieurs parties
+        \item une partie contient plusieurs tentatives
+        \item chaque tentative correspond à un Pokémon proposé
+    \end{itemize}
+
+    \section{Stack logicielle}
+
+    L'application repose sur plusieurs technologies.
+
+    \subsection{Backend}
+
+    Le backend est développé en PHP en utilisant le framework Laravel.
+
+    Laravel offre plusieurs avantages :
+
+    \begin{itemize}
+        \item architecture MVC
+        \item gestion simplifiée des routes
+        \item ORM Eloquent pour la base de données
+        \item gestion de l’authentification
+    \end{itemize}
+
+    \subsection{Frontend}
+
+    L’interface utilisateur est développée avec :
+
+    \begin{itemize}
+        \item HTML
+        \item CSS
+        \item Blade (moteur de template Laravel)
+        \item Tailwind CSS
+    \end{itemize}
+
+    Blade permet d’organiser les vues et de réutiliser des composants communs comme le layout principal.
+
+    \subsection{Base de données}
+
+    La base de données utilisée est MySQL.
+
+    Elle est gérée dans Laravel grâce à :
+
+    \begin{itemize}
+        \item les migrations
+        \item les seeders
+        \item l’ORM Eloquent
+    \end{itemize}
+
+    Les migrations permettent de versionner la structure de la base de données.
+
+    \subsection{API externe}
+
+    Les données des Pokémon sont récupérées via l’API publique PokéAPI.
+
+    Cette API permet de récupérer :
+
+    \begin{itemize}
+        \item les caractéristiques des Pokémon
+        \item leurs types
+        \item leurs évolutions
+        \item leurs statistiques
+    \end{itemize}
+
+    Ces données sont ensuite stockées dans la base afin d’optimiser les performances de l’application.
+
+    \section{Présentation des sections de l'application}
+
+    \subsection{Page d'accueil}
+
+    La page d'accueil présente le concept du jeu et permet à l'utilisateur :
+
+    \begin{itemize}
+        \item de se connecter
+        \item de créer un compte
+        \item de jouer en mode invité
+    \end{itemize}
+
+    \subsection{Authentification}
+
+    L'application propose un système d'authentification permettant :
+
+    \begin{itemize}
+        \item la création d’un compte
+        \item la connexion
+        \item la gestion des sessions utilisateur
+    \end{itemize}
+
+    Les mots de passe sont sécurisés grâce à un système de hachage.
+
+    \subsection{Interface de jeu}
+
+    L’interface de jeu permet à l’utilisateur de proposer un Pokémon.
+
+    À chaque tentative :
+
+    \begin{itemize}
+        \item l'application récupère les informations du Pokémon proposé
+        \item elle compare ces informations avec celles du Pokémon cible
+        \item elle affiche les résultats sous forme d'indices
+    \end{itemize}
+
+    Les indices permettent d’indiquer si les caractéristiques sont correctes ou non.
+
+    \subsection{Gestion des parties}
+
+    Chaque partie est enregistrée dans la base de données.
+
+    Les informations enregistrées sont :
+
+    \begin{itemize}
+        \item le joueur
+        \item le Pokémon à deviner
+        \item le nombre d'essais
+        \item la date de la partie
+    \end{itemize}
+
+    \section{Points d'amélioration}
+
+    Plusieurs améliorations peuvent être envisagées pour faire évoluer le projet.
+
+    \subsection{Mode de jeu quotidien}
+
+    Un mode quotidien pourrait être ajouté afin de proposer le même Pokémon à tous les joueurs chaque jour.
+
+    \subsection{Classement des joueurs}
+
+    Un système de classement pourrait être mis en place afin de comparer les performances des joueurs.
+
+    \subsection{Amélioration de l'interface}
+
+    L’interface graphique pourrait être améliorée afin de proposer une expérience utilisateur plus immersive.
+
+    \subsection{Statistiques}
+
+    Il serait possible d'ajouter des statistiques telles que :
+
+    \begin{itemize}
+        \item le nombre de parties jouées
+        \item le taux de réussite
+        \item le nombre moyen d’essais
+    \end{itemize}
+
+    \subsection{Déploiement}
+
+    L’application pourrait être déployée sur un serveur afin d’être accessible publiquement.
+
+    \section{Conclusion}
+
+    Le projet Pokedle m’a permis de concevoir et développer une application web complète en utilisant le framework Laravel.
+
+    Ce projet m’a permis de renforcer mes compétences en :
+
+    \begin{itemize}
+        \item développement web
+        \item conception de bases de données
+        \item utilisation d’API REST
+        \item organisation d’un projet informatique
+    \end{itemize}
+
+    Il constitue une application fonctionnelle illustrant les compétences acquises durant ma formation en BTS SIO option SLAM.
+
+\end{document}

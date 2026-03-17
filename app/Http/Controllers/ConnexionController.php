@@ -7,14 +7,24 @@ use Illuminate\Http\Request;
 
 class ConnexionController extends Controller
 {
-    public function connecter(string $username, string $password)
+
+    public function afficherVueConnexion()
     {
+        if (session()->has('joueur_id')) {
+            return redirect('/play');
+        }
+        return view('login');
+    }
+    public function connecter()
+    {
+        $username = request()->input('username');
+        $password = request()->input('password');
         $user = Joueur::where('pseudo', $username)->first();
 
         if ($user && password_verify($password, $user->pwd_hash)) {
             session()->put('joueur_id', $user->id);
             session()->put('username', $user->pseudo);
-            return redirect('/play');
+            return redirect('/games');
         } else {
             return redirect('/login')->with('error', 'Identifiants invalides.');
         }
@@ -27,8 +37,26 @@ class ConnexionController extends Controller
         return redirect('/login');
     }
 
-    public function createAcount(string $username, string $password)
+    public function afficherVueCreationCompte()
     {
+        if (session()->has('joueur_id')) {
+            return redirect('/games');
+        }
+        return view('register');
+    }
+
+    public function createAcount()
+    {
+        $username = request()->input('username');
+        $password = request()->input('password');
+        $password2 = request()->input('password_confirmation');
+
+        if ($password !== $password2) {
+            return redirect('/register')->with('error', 'Les mots de passe ne correspondent pas.');
+        }
+
+
+
         $existingUser = Joueur::where('pseudo', $username)->first();
 
         if ($existingUser) {
@@ -44,6 +72,6 @@ class ConnexionController extends Controller
 
         session()->put('joueur_id', $user->id);
         session()->put('username', $user->pseudo);
-        return redirect('/play');
+        return redirect('/games');
     }
 }
